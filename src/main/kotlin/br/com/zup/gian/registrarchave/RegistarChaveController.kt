@@ -1,10 +1,9 @@
 package br.com.zup.gian.registrarchave
 
-import br.com.zup.gian.KeyManagerServiceGrpc
+import br.com.zup.gian.KeyManagerRegistraChaveServiceGrpc
 import br.com.zup.gian.RegistraChavePixRequest
 import io.grpc.Status
 import io.grpc.StatusRuntimeException
-import io.grpc.protobuf.StatusProto
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.Body
@@ -19,7 +18,10 @@ import javax.validation.Valid
 
 @Validated
 @Controller("/pix/chaves")
-class RegistarChaveController(@Inject val gRpcClient: KeyManagerServiceGrpc.KeyManagerServiceBlockingStub) {
+class RegistarChaveController(
+    @Inject val gRpcClient:
+    KeyManagerRegistraChaveServiceGrpc.KeyManagerRegistraChaveServiceBlockingStub
+) {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
@@ -31,7 +33,7 @@ class RegistarChaveController(@Inject val gRpcClient: KeyManagerServiceGrpc.KeyM
         val requestGrpc: RegistraChavePixRequest = request.toRequestGrpc()
 
         try {
-            val response = gRpcClient.registraChavePix(requestGrpc)
+            val response = gRpcClient.registrar(requestGrpc)
 
             val uri = UriBuilder.of("/pix/chaves/{id}")
                 .expand(mutableMapOf(Pair("id", response.id)))
@@ -39,6 +41,7 @@ class RegistarChaveController(@Inject val gRpcClient: KeyManagerServiceGrpc.KeyM
             return HttpResponse.created(uri)
 
         } catch (e: StatusRuntimeException) {
+            logger.info("Novo registro de chave PIX falhou: $e")
             val statusCode = e.status.code
 
             if (statusCode == Status.Code.INVALID_ARGUMENT) {

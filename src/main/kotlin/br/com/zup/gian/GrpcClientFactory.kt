@@ -10,8 +10,8 @@ class GrpcClientFactory {
 
     @Singleton
     fun pixKeyManagerClientStub(@GrpcChannel("pixKeyManager") channel: ManagedChannel)
-            : KeyManagerServiceGrpc.KeyManagerServiceBlockingStub {
+            : KeyManagerRegistraChaveServiceGrpc.KeyManagerRegistraChaveServiceBlockingStub {
 
-        return KeyManagerServiceGrpc.newBlockingStub(channel)
+        return KeyManagerRegistraChaveServiceGrpc.newBlockingStub(channel)
     }
 }

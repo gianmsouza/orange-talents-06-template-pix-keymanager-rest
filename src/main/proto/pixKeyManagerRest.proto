@@ -7,8 +7,22 @@ option objc_class_prefix = "HLW";
 
 package br.com.zup.gian;
 
-service KeyManagerService {
-  rpc registraChavePix(RegistraChavePixRequest) returns (RegistraChavePixResponse) {}
+import "google/protobuf/timestamp.proto";
+
+service KeyManagerRegistraChaveService {
+  rpc registrar(RegistraChavePixRequest) returns (RegistraChavePixResponse) {}
+}
+
+service KeyManagerRemoveChaveService {
+  rpc remover(RemoveChavePixRequest) returns (RemoveChavePixResponse) {}
+}
+
+service KeyManagerConsultaChaveService {
+  rpc consultar(ConsultaChavePixRequest) returns (ConsultaChavePixResponse) {}
+}
+
+service KeyManagerListaChaveService {
+  rpc listar(ListaChavePixRequest) returns (ListaChavePixResponse) {}
 }
 
 enum TipoChave {
@@ -32,4 +46,63 @@ message RegistraChavePixRequest {
 
 message RegistraChavePixResponse {
   string id = 1;
+}
+
+message RemoveChavePixRequest {
+  string chavePixId = 1;
+  string clientId = 2;
+}
+
+message RemoveChavePixResponse {
+  string chavePixId = 1;
+}
+
+message ConsultaChavePixRequest {
+  message FiltroPorPixId {
+    string chavePixId = 1;
+    string clientId = 2;
+  }
+
+  oneof filtro {
+    FiltroPorPixId pixId = 1;
+    string chave = 2;
+  }
+}
+
+message ConsultaChavePixResponse {
+  message ChavePix {
+    message DadosDaConta {
+      string nomeTitular = 1;
+      string cpfTitular = 2;
+      string instituicaoFinanceira = 3;
+      string agencia = 4;
+      string numeroConta = 5;
+      TipoConta tipoConta = 6;
+    }
+
+    TipoChave tipoChave = 1;
+    string valorChave = 2;
+    DadosDaConta conta = 3;
+    google.protobuf.Timestamp criadoEm = 4;
+  }
+
+  string clientId = 1;
+  string chavePixId = 2;
+  ChavePix chave = 3;
+}
+
+message ListaChavePixRequest {
+  string clientId = 1;
+}
+
+message ListaChavePixResponse {
+  message ChavePix {
+    string chavePixId = 1;
+    string clientId = 2;
+    TipoChave tipoChave = 3;
+    string valorChave = 4;
+    TipoConta tipoConta = 5;
+    google.protobuf.Timestamp criadoEm = 6;
+  }
+  repeated ChavePix chavePix = 1;
 }
